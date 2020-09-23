@@ -1,37 +1,8 @@
-// import * as React from "react"
-import { Link as GLink, navigate } from "gatsby"
-import { getUser, isLoggedIn, logout } from "../utils/auth"
-
-// export const NavBar: React.FC = () => {
-
-//   return (
-//     <div
-//       style={{
-//         display: "flex",
-//         flex: "1",
-//         justifyContent: "space-between",
-//         borderBottom: "1px solid #ccc",
-//       }}
-//     >
-//       <nav>
-//         <Link to="/">Home</Link> <Link to="/app/profile">Profile</Link>
-//         {isLoggedIn() ? (
-//           <a
-//             href="/"
-//             onClick={event => {
-//               event.preventDefault()
-//               logout(() => navigate("/app/login"))
-//             }}
-//           >
-//             Logout
-//           </a>
-//         ) : null}
-//       </nav>
-//     </div>
-//   )
-// }
-
 import React from "react"
+import { Link as GLink, navigate } from "gatsby"
+import { logout } from "../utils/auth"
+import { gql, useQuery } from "@apollo/client"
+import { cache } from "../utils/cache"
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles"
 import AppBar from "@material-ui/core/AppBar"
 import Toolbar from "@material-ui/core/Toolbar"
@@ -40,6 +11,12 @@ import Button from "@material-ui/core/Button"
 import Link from "@material-ui/core/Link"
 
 import IconButton from "@material-ui/core/IconButton"
+
+const GET_STATE = gql`
+  query STATE {
+    cartItems @client
+  }
+`
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -61,11 +38,16 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 export const NavBar = () => {
+  const { data, loading } = useQuery(GET_STATE)
+
   const classes = useStyles()
 
+  let name = data.cartItems.name
+  let isLoggedIn = data.cartItems.authorized
+
   let greetingMessage = ""
-  if (isLoggedIn()) {
-    greetingMessage = `Hello ${getUser().name}`
+  if (isLoggedIn) {
+    greetingMessage = `Hello ${name}`
   } else {
     greetingMessage = "You are not logged in!"
   }
@@ -99,7 +81,7 @@ export const NavBar = () => {
           >
             Profile
           </Link>
-          {isLoggedIn() ? (
+          {isLoggedIn ? (
             <Link
               className={classes.link}
               href=""

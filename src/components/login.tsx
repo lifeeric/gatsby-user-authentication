@@ -1,6 +1,6 @@
 import * as React from "react"
 import { navigate } from "gatsby"
-import { handleLogin, isLoggedIn } from "../utils/auth"
+import { handleLogin } from "../utils/auth"
 
 export class Login extends React.Component {
   state = {
@@ -20,8 +20,6 @@ export class Login extends React.Component {
   }
 
   render() {
-    if (isLoggedIn()) navigate("/app/profile")
-
     return (
       <>
         <h1> Log in</h1>

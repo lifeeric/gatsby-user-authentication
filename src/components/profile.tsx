@@ -1,12 +1,24 @@
 import * as React from "react"
-import { getUser } from "../utils/auth"
+import { cache } from "../utils/cache"
+import { gql, useQuery } from "@apollo/client"
 
-export const Profile: React.FC = () => (
-  <>
-    <h1>Your profile</h1>
-    <ul>
-      <li>Name: {getUser().name}</li>
-      <li>E-mail:{getUser().email} </li>
-    </ul>
-  </>
-)
+const GET_STATE = gql`
+  query STATE {
+    cartItems @client
+  }
+`
+
+export const Profile: React.FC = () => {
+  const { data, loading, error } = useQuery(GET_STATE)
+  let name = data.cartItems.name
+  let email = data.cartItems.email
+  return (
+    <>
+      <h1>Your profile</h1>
+      <ul>
+        <li>Name: {name}</li>
+        <li>E-mail:{email} </li>
+      </ul>
+    </>
+  )
+}
